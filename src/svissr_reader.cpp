@@ -30,7 +30,7 @@ void SVISSRReader::reset()
     std::fill(&imageBufferIR2[0], &imageBufferIR2[MAX_HEIGHT * WIDTH_IR], 0);
     std::fill(&imageBufferIR3[0], &imageBufferIR3[MAX_HEIGHT * WIDTH_IR], 0);
     std::fill(&imageBufferIR4[0], &imageBufferIR4[MAX_HEIGHT * WIDTH_IR], 0);
-    std::fill(&imageBufferVIS[0], &imageBufferVIS[MAX_HEIGHT * WIDTH_VIS], 0);
+    std::fill(&imageBufferVIS[0], &imageBufferVIS[MAX_HEIGHT * 4 * WIDTH_VIS], 0);
 }
 
 void SVISSRReader::pushFrame(uint8_t *data)
