@@ -13,6 +13,8 @@ The current process currently requires demodulating with FY2Demod.grc (GNU Radio
 
 `./SVISSR-Decoder file.bin`
 
+The frequency is 1687.5Mhz.
+
 # Building
 
 This will require libpng, which on debian systems such as Ubuntu can be installed with `sudo apt install libpng-dev`.   
