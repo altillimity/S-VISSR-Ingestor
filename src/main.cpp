@@ -15,23 +15,24 @@ int fulldisk = 0;
 // Function to save images
 void saveImages()
 {
+    std::filesystem::create_directory("SVISSR-" + std::to_string(fulldisk));
     std::cout << std::endl;
     std::cout << "Writing images... (Can take a while)" << std::endl;
 
     std::cout << "IR 1..." << std::endl;
-    channelVIS5Reader.getImageIR1().save_png(std::string(std::to_string(fulldisk) + "IR-1.png").c_str());
+    channelVIS5Reader.getImageIR1().save_png(std::string("SVISSR-" + std::to_string(fulldisk) + "/IR-1.png").c_str());
 
     std::cout << "IR 2..." << std::endl;
-    channelVIS5Reader.getImageIR2().save_png(std::string(std::to_string(fulldisk) + "IR-2.png").c_str());
+    channelVIS5Reader.getImageIR2().save_png(std::string("SVISSR-" + std::to_string(fulldisk) + "/IR-2.png").c_str());
 
     std::cout << "IR 3..." << std::endl;
-    channelVIS5Reader.getImageIR3().save_png(std::string(std::to_string(fulldisk) + "IR-3.png").c_str());
+    channelVIS5Reader.getImageIR3().save_png(std::string("SVISSR-" + std::to_string(fulldisk) + "/IR-3.png").c_str());
 
     std::cout << "IR 4..." << std::endl;
-    channelVIS5Reader.getImageIR4().save_png(std::string(std::to_string(fulldisk) + "IR-4.png").c_str());
+    channelVIS5Reader.getImageIR4().save_png(std::string("SVISSR-" + std::to_string(fulldisk) + "/IR-4.png").c_str());
 
     std::cout << "Visible..." << std::endl;
-    channelVIS5Reader.getImageVIS().save_png(std::string(std::to_string(fulldisk) + "VIS.png").c_str());
+    channelVIS5Reader.getImageVIS().save_png(std::string("SVISSR-" + std::to_string(fulldisk) + "/VIS.png").c_str());
 
     fulldisk++;
 }
