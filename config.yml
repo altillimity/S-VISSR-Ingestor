@@ -1,0 +1,15 @@
+# SVISSR-Ingestor configuration
+
+# SDR Settings
+radio:
+  device: "driver=airspy" # SoapySDR device string
+  frequency: 1687500000 # EWS-G1 (GOES-13) Frequency
+  sample_rate: 3000000 # Samplerate. Has to be >= 0.660MSPS
+  gain: 40 # SDR Gain, an integer
+  biastee: true
+
+# Data director to save the pictures in
+data_directory: SVISSR_DATA
+
+# Write demodulated data to svissr.bin (debugging only, ignore otherwise)
+write_demod_bin: false

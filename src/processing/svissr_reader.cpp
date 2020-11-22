@@ -1,6 +1,6 @@
 #include "svissr_reader.h"
 
-#define MAX_HEIGHT 2991
+#define MAX_HEIGHT 2501
 #define WIDTH_IR 2291
 #define WIDTH_VIS 2290 * 4
 
@@ -43,7 +43,7 @@ void SVISSRReader::pushFrame(uint8_t *data)
         return;
 
     // Safeguard
-    if (counter >= 2991)
+    if (counter >= MAX_HEIGHT)
         return;
 
     // Decode IR Channel 1
@@ -140,25 +140,25 @@ void SVISSRReader::pushFrame(uint8_t *data)
 
 cimg_library::CImg<unsigned short> SVISSRReader::getImageIR1()
 {
-    return cimg_library::CImg<unsigned short>(&imageBufferIR1[0], WIDTH_IR, 2991);
+    return cimg_library::CImg<unsigned short>(&imageBufferIR1[0], WIDTH_IR, MAX_HEIGHT);
 }
 
 cimg_library::CImg<unsigned short> SVISSRReader::getImageIR2()
 {
-    return cimg_library::CImg<unsigned short>(&imageBufferIR2[0], WIDTH_IR, 2991);
+    return cimg_library::CImg<unsigned short>(&imageBufferIR2[0], WIDTH_IR, MAX_HEIGHT);
 }
 
 cimg_library::CImg<unsigned short> SVISSRReader::getImageIR3()
 {
-    return cimg_library::CImg<unsigned short>(&imageBufferIR3[0], WIDTH_IR, 2991);
+    return cimg_library::CImg<unsigned short>(&imageBufferIR3[0], WIDTH_IR, MAX_HEIGHT);
 }
 
 cimg_library::CImg<unsigned short> SVISSRReader::getImageIR4()
 {
-    return cimg_library::CImg<unsigned short>(&imageBufferIR4[0], WIDTH_IR, 2991);
+    return cimg_library::CImg<unsigned short>(&imageBufferIR4[0], WIDTH_IR, MAX_HEIGHT);
 }
 
 cimg_library::CImg<unsigned short> SVISSRReader::getImageVIS()
 {
-    return cimg_library::CImg<unsigned short>(&imageBufferVIS[0], WIDTH_VIS, 2991 * 4);
+    return cimg_library::CImg<unsigned short>(&imageBufferVIS[0], WIDTH_VIS, MAX_HEIGHT * 4);
 }
