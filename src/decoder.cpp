@@ -85,11 +85,12 @@ void SVISSRDecoder::processBuffer(uint8_t *buffer, int size)
         // Derandomize this frame
         derandomizer.derandData(frameBuffer, 354848 / 8);
 
-        // Process it
-        vissrImageReader.pushFrame(frameBuffer);
-
         // Parse counter
         int counter = frameBuffer[67] << 8 | frameBuffer[68];
+
+        // Safeguard
+        if (counter > 2500)
+            return;
 
         //std::cout << counter << std::endl;
 
@@ -130,8 +131,12 @@ void SVISSRDecoder::processBuffer(uint8_t *buffer, int size)
         else
         {
             nonZeronCount++;
-            zeroCount = 0;
+            if (zeroCount > 0)
+                zeroCount -= 1;
         }
+
+        // Process it
+        vissrImageReader.pushFrame(frameBuffer);
 
         // Show very basic progress
         if (!writingImage)
