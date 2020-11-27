@@ -1,6 +1,7 @@
 cmake_minimum_required (VERSION 3.0.0)
 
 set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 project (SVISSR-Ingestor)
 file(GLOB_RECURSE SVISSR-Ingestor_CPPS src/*.cpp src/pipe.c)
@@ -12,6 +13,7 @@ if(APPLE)
 endif()
 
 add_executable(SVISSR-Ingestor ${SVISSR-Ingestor_CPPS})
+target_link_libraries(SVISSR-Ingestor PUBLIC stdc++fs)
 
 target_include_directories(SVISSR-Ingestor PUBLIC src)
 
