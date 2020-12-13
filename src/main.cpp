@@ -206,7 +206,8 @@ int main(int argc, char *argv[])
 
         // SDR Stuff
         SoapySDR::Device *device = SoapySDR::Device::make(ingestorConfig.device);
-        device->writeSetting("biastee", ingestorConfig.bias ? "true" : "false");
+        if(ingestorConfig.device == "device=airspy")
+             device->writeSetting("biastee", ingestorConfig.bias ? "true" : "false");
         device->setFrequency(SOAPY_SDR_RX, 0, ingestorConfig.frequency);
         device->setSampleRate(SOAPY_SDR_RX, 0, ingestorConfig.samplerate);
         device->setGain(SOAPY_SDR_RX, 0, ingestorConfig.gain);

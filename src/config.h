@@ -11,6 +11,7 @@ struct IngestorConfig
     bool write_demod_bin;
     std::string device;
     std::string data_directory;
+    std::string sat_name;
 };
 
 extern IngestorConfig ingestorConfig;

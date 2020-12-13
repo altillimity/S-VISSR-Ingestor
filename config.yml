@@ -1,5 +1,10 @@
 # SVISSR-Ingestor configuration
 
+# Satellite name. 
+# For consistency it is advised to keep either FY-2H, FY-2G, etc in the same 
+# format, but otherwise you can put anything
+satellite_name: FY-2H
+
 # SDR Settings
 radio:
   device: "driver=airspy" # SoapySDR device string

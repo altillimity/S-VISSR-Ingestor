@@ -33,6 +33,11 @@ You will first need to create a config.yml in your work folder (where the binary
 ```
 # SVISSR-Ingestor configuration
 
+# Satellite name. 
+# For consistency it is advised to keep either FY-2H, FY-2G, etc in the same 
+# format, but otherwise you can put anything
+satellite_name: FY-2H
+
 # SDR Settings
 radio:
   device: "driver=airspy" # SoapySDR device string
@@ -93,5 +98,7 @@ sudo make install
 Windows binaries are available in the repository with support for the following SDRs :
 - Airspy
 - RTL-SDR
+- LimeSDR
+- LimeSDR Mini
    
 If you need support for something else on Windows, feel free to open an issue and I will add it.
