@@ -24,5 +24,5 @@ void loadConfig()
     ingestorConfig.device = configFile["radio"]["device"].as<std::string>();
     ingestorConfig.data_directory = configFile["data_directory"].as<std::string>();
     ingestorConfig.write_demod_bin = configFile["write_demod_bin"].as<bool>();
-    ingestorConfig.sat_name = configFile["satellite_name"].as<bool>();
+    ingestorConfig.sat_name = configFile["satellite_name"].as<std::string>();
 }

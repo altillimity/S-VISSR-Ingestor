@@ -18,7 +18,7 @@ The program can either run as a 24/7 service for automated station setups or as 
 First of all, record a baseband at 2MSPS or more and demodulate with the included FY2Demod.grc (GNU Radio 3.8), obtaining a .bin.   
 Then, run the .bin through the decoder as follow :
 ``` 
-SVISSR-Ingestor --dec gvar.bin
+SVISSR-Ingestor --dec fy2.bin
 ```
 
 ## Autonomous
