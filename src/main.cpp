@@ -46,6 +46,7 @@ int main(int argc, char *argv[])
     if (optionOnlyDecoder.isSet())
     {
         std::cout << "Starting decoder only..." << std::endl;
+        ingestorConfig.sat_name = "FY-2x";
 
         // File and read buffer
         std::ifstream inputFrameFile(optionOnlyDecoder.getValue(), std::ios::binary);
@@ -129,6 +130,7 @@ int main(int argc, char *argv[])
     else if (optionBasebandDecode.isSet())
     {
         std::cout << "Starting demodulator and decoder from baseband..." << std::endl;
+        ingestorConfig.sat_name = "FY-2x";
 
         // Files and buffers
         std::ifstream inputBaseband(optionBasebandDecode.getValue(), std::ios::binary);

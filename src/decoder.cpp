@@ -1,6 +1,19 @@
 #include "decoder.h"
 #include <iostream>
 #include <filesystem>
+#include "config.h"
+
+std::string getFYFilename(std::tm *timeReadable, int channel)
+{
+    std::string utc_filename = ingestorConfig.sat_name + "_" + std::to_string(channel) + "_" +                                                              // Satellite name and channel
+                               std::to_string(timeReadable->tm_year + 1900) +                                                                               // Year yyyy
+                               (timeReadable->tm_mon + 1 > 9 ? std::to_string(timeReadable->tm_mon + 1) : "0" + std::to_string(timeReadable->tm_mon + 1)) + // Month MM
+                               (timeReadable->tm_mday > 9 ? std::to_string(timeReadable->tm_mday) : "0" + std::to_string(timeReadable->tm_mday)) + "T" +    // Day dd
+                               (timeReadable->tm_hour > 9 ? std::to_string(timeReadable->tm_hour) : "0" + std::to_string(timeReadable->tm_hour)) +          // Hour HH
+                               (timeReadable->tm_min > 9 ? std::to_string(timeReadable->tm_min) : "0" + std::to_string(timeReadable->tm_min)) +             // Minutes mm
+                               (timeReadable->tm_sec > 9 ? std::to_string(timeReadable->tm_sec) : "0" + std::to_string(timeReadable->tm_sec)) + "Z";        // Seconds ss
+    return utc_filename;
+}
 
 void SVISSRDecoder::writeFullDisks()
 {
@@ -18,29 +31,23 @@ void SVISSRDecoder::writeFullDisks()
     {
         std::filesystem::create_directory(output_folder + "/SVISSR_" + timestamp);
     }
-    else
-    {
-        while (std::filesystem::exists(output_folder + "/SVISSR_" + timestamp))
-        {
-            timestamp += "-bis";
-        }
-        std::filesystem::create_directory(output_folder + "/SVISSR_" + timestamp);
-    }
 
-    std::cout << "Channel 1..." << std::endl;
-    image1.save_png(std::string(output_folder + "/SVISSR_" + timestamp + "/IR-1.png").c_str());
+    std::string disk_folder = output_folder + "/SVISSR_" + timestamp;
 
-    std::cout << "Channel 2..." << std::endl;
-    image2.save_png(std::string(output_folder + "/SVISSR_" + timestamp + "/IR-2.png").c_str());
+    std::cout << "Channel 1... " + getFYFilename(timeReadable, 1) + ".png"  << std::endl;
+    image1.save_png(std::string(disk_folder + "/" + getFYFilename(timeReadable, 1) + ".png").c_str());
 
-    std::cout << "Channel 3..." << std::endl;
-    image3.save_png(std::string(output_folder + "/SVISSR_" + timestamp + "/IR-3.png").c_str());
+    std::cout << "Channel 2... " + getFYFilename(timeReadable, 2) + ".png"  << std::endl;
+    image2.save_png(std::string(disk_folder + "/" + getFYFilename(timeReadable, 2) + ".png").c_str());
 
-    std::cout << "Channel 4..." << std::endl;
-    image4.save_png(std::string(output_folder + "/SVISSR_" + timestamp + "/IR-4.png").c_str());
+    std::cout << "Channel 3... " + getFYFilename(timeReadable, 3) + ".png"  << std::endl;
+    image3.save_png(std::string(disk_folder + "/" + getFYFilename(timeReadable, 3) + ".png").c_str());
 
-    std::cout << "Channel 5..." << std::endl;
-    image5.save_png(std::string(output_folder + "/SVISSR_" + timestamp + "/VIS.png").c_str());
+    std::cout << "Channel 4... " + getFYFilename(timeReadable, 4) + ".png"  << std::endl;
+    image4.save_png(std::string(disk_folder + "/" + getFYFilename(timeReadable, 4) + ".png").c_str());
+
+    std::cout << "Channel 5... " + getFYFilename(timeReadable, 5) + ".png"  << std::endl;
+    image5.save_png(std::string(disk_folder + "/" + getFYFilename(timeReadable, 5) + ".png").c_str());
 
     writingImage = false;
 }
