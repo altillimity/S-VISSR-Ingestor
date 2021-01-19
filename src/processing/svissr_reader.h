@@ -11,6 +11,7 @@ private:
     unsigned short *imageBufferIR1, *imageBufferIR2, *imageBufferIR3, *imageBufferIR4, *imageBufferVIS;
     unsigned short *imageLineBuffer;
     uint8_t byteBufShift[5];
+    bool *goodLines;
 
 public:
     SVISSRReader();

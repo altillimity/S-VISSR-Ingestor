@@ -12,6 +12,7 @@ SVISSRReader::SVISSRReader()
     imageBufferIR4 = new unsigned short[MAX_HEIGHT * WIDTH_IR];
     imageBufferVIS = new unsigned short[MAX_HEIGHT * 4 * WIDTH_VIS];
     imageLineBuffer = new unsigned short[40000];
+    goodLines = new bool[MAX_HEIGHT];
 }
 
 SVISSRReader::~SVISSRReader()
@@ -31,16 +32,12 @@ void SVISSRReader::reset()
     std::fill(&imageBufferIR3[0], &imageBufferIR3[MAX_HEIGHT * WIDTH_IR], 0);
     std::fill(&imageBufferIR4[0], &imageBufferIR4[MAX_HEIGHT * WIDTH_IR], 0);
     std::fill(&imageBufferVIS[0], &imageBufferVIS[MAX_HEIGHT * 4 * WIDTH_VIS], 0);
+    std::fill(&goodLines[0], &goodLines[MAX_HEIGHT], false);
 }
 
 void SVISSRReader::pushFrame(uint8_t *data)
 {
     int counter = (data[67]) << 8 | (data[68]); // Decode line counter
-    int status = data[3] % (int)pow(2, 2);      // Decoder scan status
-
-    // We only want forward scan data
-    if (status != 3)
-        return;
 
     // Safeguard
     if (counter >= MAX_HEIGHT)
@@ -136,29 +133,109 @@ void SVISSRReader::pushFrame(uint8_t *data)
             }
         }
     }
+
+    goodLines[counter] = true;
 }
 
 cimg_library::CImg<unsigned short> SVISSRReader::getImageIR1()
 {
+    // Fill missing lines by averaging above and below line
+    for (int y = 1; y < MAX_HEIGHT - 1; y++)
+    {
+        bool &current = goodLines[y];
+        if (!current)
+        {
+            for (int i = 0; i < WIDTH_IR; i++)
+            {
+                unsigned short &above = imageBufferIR1[((y - 1) * WIDTH_IR) + i];
+                unsigned short &below = imageBufferIR1[((y + 1) * WIDTH_IR) + i];
+                imageBufferIR1[(y * WIDTH_IR) + i] = (above + below) / 2;
+            }
+        }
+    }
+
     return cimg_library::CImg<unsigned short>(&imageBufferIR1[0], WIDTH_IR, MAX_HEIGHT);
 }
 
 cimg_library::CImg<unsigned short> SVISSRReader::getImageIR2()
 {
+    // Fill missing lines by averaging above and below line
+    for (int y = 1; y < MAX_HEIGHT - 1; y++)
+    {
+        bool &current = goodLines[y];
+        if (!current)
+        {
+            for (int i = 0; i < WIDTH_IR; i++)
+            {
+                unsigned short &above = imageBufferIR2[((y - 1) * WIDTH_IR) + i];
+                unsigned short &below = imageBufferIR2[((y + 1) * WIDTH_IR) + i];
+                imageBufferIR2[(y * WIDTH_IR) + i] = (above + below) / 2;
+            }
+        }
+    }
+
     return cimg_library::CImg<unsigned short>(&imageBufferIR2[0], WIDTH_IR, MAX_HEIGHT);
 }
 
 cimg_library::CImg<unsigned short> SVISSRReader::getImageIR3()
 {
+    // Fill missing lines by averaging above and below line
+    for (int y = 1; y < MAX_HEIGHT - 1; y++)
+    {
+        bool &current = goodLines[y];
+        if (!current)
+        {
+            for (int i = 0; i < WIDTH_IR; i++)
+            {
+                unsigned short &above = imageBufferIR3[((y - 1) * WIDTH_IR) + i];
+                unsigned short &below = imageBufferIR3[((y + 1) * WIDTH_IR) + i];
+                imageBufferIR3[(y * WIDTH_IR) + i] = (above + below) / 2;
+            }
+        }
+    }
+
     return cimg_library::CImg<unsigned short>(&imageBufferIR3[0], WIDTH_IR, MAX_HEIGHT);
 }
 
 cimg_library::CImg<unsigned short> SVISSRReader::getImageIR4()
 {
+    // Fill missing lines by averaging above and below line
+    for (int y = 1; y < MAX_HEIGHT - 1; y++)
+    {
+        bool &current = goodLines[y];
+        if (!current)
+        {
+            for (int i = 0; i < WIDTH_IR; i++)
+            {
+                unsigned short &above = imageBufferIR4[((y - 1) * WIDTH_IR) + i];
+                unsigned short &below = imageBufferIR4[((y + 1) * WIDTH_IR) + i];
+                imageBufferIR4[(y * WIDTH_IR) + i] = (above + below) / 2;
+            }
+        }
+    }
+
     return cimg_library::CImg<unsigned short>(&imageBufferIR4[0], WIDTH_IR, MAX_HEIGHT);
 }
 
 cimg_library::CImg<unsigned short> SVISSRReader::getImageVIS()
 {
+    // Fill missing lines by averaging above and below line
+    for (int y = 1; y < MAX_HEIGHT - 1; y++)
+    {
+        bool &current = goodLines[y];
+        if (!current)
+        {
+            for (int i = 0; i < WIDTH_VIS; i++)
+            {
+                unsigned short &above = imageBufferVIS[((y * 4 - 1) * WIDTH_VIS) + i];
+                unsigned short &below = imageBufferVIS[((y * 4 + 4) * WIDTH_VIS) + i];
+                imageBufferVIS[((y * 4 + 0) * WIDTH_VIS) + i] = (above + below) / 2;
+                imageBufferVIS[((y * 4 + 1) * WIDTH_VIS) + i] = (above + below) / 2;
+                imageBufferVIS[((y * 4 + 2) * WIDTH_VIS) + i] = (above + below) / 2;
+                imageBufferVIS[((y * 4 + 3) * WIDTH_VIS) + i] = (above + below) / 2;
+            }
+        }
+    }
+
     return cimg_library::CImg<unsigned short>(&imageBufferVIS[0], WIDTH_VIS, MAX_HEIGHT * 4);
 }

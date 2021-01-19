@@ -49,8 +49,8 @@ SVISSRDecoder::SVISSRDecoder(std::string out)
 {
     // Counters and so
     writingImage = false;
-    zeroCount = 0;
-    nonZeronCount = 0;
+    endCount = 0;
+    nonEndCount = 0;
     lastNonZero = 0;
 
     // Init thread pool
@@ -92,18 +92,26 @@ void SVISSRDecoder::processBuffer(uint8_t *buffer, int size)
         if (counter > 2500)
             return;
 
+        // Parse scan status
+        int status = frameBuffer[3] % (int)pow(2, 2); // Decoder scan status
+
+        // We only want forward scan data
+        if (status != 3)
+            return;
+
         //std::cout << counter << std::endl;
 
         // Try to detect a new scan
-        if (counter == 0)
+        // This is not the best way, but it works...
+        if (counter > 2490 && counter <= 2500)
         {
-            zeroCount++;
-            nonZeronCount = 0;
+            endCount++;
+            nonEndCount = 0;
 
-            if (zeroCount > 80)
+            if (endCount > 5)
             {
-                zeroCount = 0;
-                std::cout << "Full disk detected!" << std::endl;
+                endCount = 0;
+                std::cout << "Full disk end detected!" << std::endl;
 
                 if (!writingImage)
                 {
@@ -130,9 +138,9 @@ void SVISSRDecoder::processBuffer(uint8_t *buffer, int size)
         }
         else
         {
-            nonZeronCount++;
-            if (zeroCount > 0)
-                zeroCount -= 1;
+            nonEndCount++;
+            if (endCount > 0)
+                endCount -= 1;
         }
 
         // Process it
@@ -148,6 +156,9 @@ void SVISSRDecoder::processBuffer(uint8_t *buffer, int size)
 
 void SVISSRDecoder::forceWriteFullDisks()
 {
+    if (writingImage = true)
+        return;
+
     writingImage = true;
 
     // Backup images

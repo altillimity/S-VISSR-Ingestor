@@ -14,8 +14,8 @@ private:
 
     // Utils values
     bool writingImage;
-    int zeroCount;
-    int nonZeronCount;
+    int endCount;
+    int nonEndCount;
     int lastNonZero;
 
     // Image readers
