@@ -22,9 +22,8 @@ target_link_libraries(SVISSR-Ingestor PUBLIC m)
 find_package(Threads REQUIRED)
 target_link_libraries(SVISSR-Ingestor PUBLIC Threads::Threads)
 
-find_package(SoapySDR "0.6.0" NO_MODULE REQUIRED)
-include_directories(${SOAPY_SDR_INCLUDE_DIR})
-target_link_libraries(SVISSR-Ingestor PUBLIC ${SOAPY_SDR_LIBRARY})  
+find_library(AIRSPY_LIBRARY airspy REQUIRED)
+target_link_libraries(SVISSR-Ingestor PUBLIC ${AIRSPY_LIBRARY})
 
 find_package(yaml-cpp REQUIRED)
 target_include_directories(SVISSR-Ingestor PUBLIC ${YAML_CPP_INCLUDE_DIR})

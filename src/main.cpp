@@ -8,8 +8,15 @@
 #include "tclap/CmdLine.h"
 #include <thread>
 #include <filesystem>
-#include <SoapySDR/Device.hpp>
-#include <SoapySDR/Formats.hpp>
+#include <libairspy/airspy.h>
+
+SVISSRDemodulator *demodulator;
+
+static int _rx_callback(airspy_transfer *t)
+{
+    demodulator->pushMultiThread((std::complex<float> *)t->samples, t->sample_count);
+    return 0;
+};
 
 int main(int argc, char *argv[])
 {
@@ -201,30 +208,32 @@ int main(int argc, char *argv[])
             outputBin = std::ofstream("svissr.bin", std::ios::binary);
 
         // SVISSR Demodulator and Decoder
-        SVISSRDemodulator demodulator(ingestorConfig.samplerate, true);
+        demodulator = new SVISSRDemodulator(ingestorConfig.samplerate, true);
         SVISSRDecoder decoder(ingestorConfig.data_directory);
 
         // SDR Stuff
-        SoapySDR::Device *device = SoapySDR::Device::make(ingestorConfig.device);
-        if(ingestorConfig.device == "device=airspy")
-             device->writeSetting("biastee", ingestorConfig.bias ? "true" : "false");
-        device->setFrequency(SOAPY_SDR_RX, 0, ingestorConfig.frequency);
-        device->setSampleRate(SOAPY_SDR_RX, 0, ingestorConfig.samplerate);
-        device->setGain(SOAPY_SDR_RX, 0, ingestorConfig.gain);
-        SoapySDR::Stream *device_stream = device->setupStream(SOAPY_SDR_RX, SOAPY_SDR_CF32);
-        device->activateStream(device_stream, 0, 0, 0);
+        struct airspy_device *dev;
 
-        // SDR variables
-        void *sdr_buffer_ptr[] = {buffer};
-        int flags;
-        long long time_ns;
+        if (airspy_open(&dev) != AIRSPY_SUCCESS)
+        {
+            std::cout << "Could not open Airspy device!" << std::endl;
+            return 1;
+        }
+
+        std::cout << "Opened Airspy device!" << std::endl;
+
+        airspy_set_sample_type(dev, AIRSPY_SAMPLE_FLOAT32_IQ);
+        airspy_set_samplerate(dev, ingestorConfig.samplerate);
+        airspy_set_freq(dev, ingestorConfig.frequency);
+        airspy_set_rf_bias(dev, ingestorConfig.bias);
+        airspy_set_linearity_gain(dev, ingestorConfig.gain);
 
         // Decoding thread
         bool shouldRun = true;
         std::thread decThread([&]() {
             while (shouldRun)
             {
-                int bytesOut = demodulator.pullMultiThread(buffer_out);
+                int bytesOut = demodulator->pullMultiThread(buffer_out);
 
                 if (ingestorConfig.write_demod_bin)
                     outputBin.write((char *)buffer_out, bytesOut);
@@ -233,22 +242,20 @@ int main(int argc, char *argv[])
             }
         });
 
-        // Read until EOF
-        while (device_stream)
-        {
-            int read_samples = device->readStream(device_stream, sdr_buffer_ptr, 8192, flags, time_ns, 1e6);
+        // Pull samples
+        airspy_start_rx(dev, &_rx_callback, nullptr);
 
-            if (read_samples > 8192 || read_samples <= 0)
-                continue;
-
-            demodulator.pushMultiThread(buffer, read_samples);
-        }
+        // Wait
+        while (airspy_is_streaming(dev))
+            std::this_thread::sleep_for(std::chrono::seconds(1));
 
         std::cout << "\nSDR Aborted" << std::endl;
 
+        airspy_stop_rx(dev);
+
         // Exit the decoding thread properly
         shouldRun = false;
-        demodulator.stop();
+        demodulator->stop();
         if (decThread.joinable())
             decThread.join();
 
@@ -263,7 +270,7 @@ int main(int argc, char *argv[])
         std::cout << "Done!" << std::endl;
 
         // Close files and SDR
-        device->closeStream(device_stream);
+        airspy_close(dev);
 
         if (ingestorConfig.write_demod_bin)
             outputBin.close();
